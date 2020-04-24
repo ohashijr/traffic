@@ -1,0 +1,28 @@
+---
+title: "report"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+load("data/dados.RData")
+```
+
+## Analise de Rotas
+
+```{r top10ontem}
+# analise de ontem
+ontem <- d[d$dataAsDate == Sys.Date() - 1,]
+
+uniqueIdOntem <- unique(ontem$idRota)
+aux <- numeric()
+for(i in uniqueIdOntem){
+  aux <- c(aux, ontem[ontem$idRota == i,"diffTempo"] %>% mean())
+}
+mediaOntem <- data.frame(rotaId=uniqueIdOntem, media=aux)
+top10MediaOntem <-mediaOntem[order(mediaOntem$media, decreasing = T)[1:10], ]
+
+ggplot(data=d[d$idRota %in% top10MediaOntem$rotaId,], aes(x=idRota, y=diffTempo, color=idRota))
+```
